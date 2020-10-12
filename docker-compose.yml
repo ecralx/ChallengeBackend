@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+    db:
+        image: postgres:12-alpine
+        volumes:
+          - postgres_data:/var/lib/postgresql/data/
+        environment:
+          - POSTGRES_USER=groover_challenge
+          - POSTGRES_PASSWORD=groover_challenge
+          - POSTGRES_DB=groover_challenge
+        logging:
+            driver: "none"
+    webserver:
+        build: .
+        command: python manage.py run -h 0.0.0.0
+        volumes:
+            - ./:/app
+        ports:
+            - "5000:5000"
+        links:
+            - db
+        environment:
+            FLASK_APP: src/__init__.py
+            FLASK_ENV: development
+            DATABASE_URL: postgresql://groover_challenge:groover_challenge@db:5432/groover_challenge
+            SECRET: xxxxxxxxxxxxxxxxxx
+
+volumes:
+    postgres_data:
