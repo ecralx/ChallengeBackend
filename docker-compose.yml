@@ -24,6 +24,8 @@ services:
             FLASK_ENV: development
             DATABASE_URL: postgresql://groover_challenge:groover_challenge@db:5432/groover_challenge
             SECRET: xxxxxxxxxxxxxxxxxx
+        env_file:
+            - .env
 
 volumes:
     postgres_data:
