@@ -6,9 +6,14 @@ from .spotify_fetcher import SpotifyFetcher
 
 @app.route("/api/artists")
 def todayArtists():
+    """
+    Displays the artists of the last <release_limit, default:20> releases.
+    """
+    limit = request.args.get('release_limit', 20)
+
     if not scheduler.get_job('fetch'):
         return redirect(url_for('authLogin'))
-    latest_releases = Album.query.order_by(Album.created_at.desc()).all()
+    latest_releases = Album.query.order_by(Album.created_at.desc()).limit(limit).all()
     if len(latest_releases) > 0:
         artist_idx = []
         artists = []
