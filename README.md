@@ -50,8 +50,6 @@ $ unset $(grep -v '^#' .env | sed -E 's/(.*)=.*/\1/' | xargs)
 Once you're done, visit [http://localhost:5000/api/artists](http://localhost:5000/api/artists) !
 
 ## Various remarks
-This part is kind-of a todo list to what could be done. I did want to make the app in ~one day.
-
 - The token is being refreshed only when Spotify's API specifies that it is expired. Sadly the best way to do that is to compare the error message (no specific status code is used).
 - I've made some modifications in the refreshAuth as it didn't correspond to the (Spotify) documentation's specifications.
 - I didn't want to alter `SpotifyAuth` any further, so I didn't change the hardcoded callback url for something more automated.
