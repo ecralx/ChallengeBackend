@@ -1,8 +1,9 @@
 import requests, json, time
 from datetime import datetime
 from math import ceil
-from src import app
+from src import app, db, Album, Artist
 from .spotify_auth import SpotifyAuth
+
 
 class SpotifyFetcher(SpotifyAuth):
     SPOTIFY_URL_NEW_RELEASES = "https://api.spotify.com/v1/browse/new-releases"
@@ -68,5 +69,48 @@ class SpotifyFetcher(SpotifyAuth):
 
     def import_releases(self):
         releases = self.fetch_all()
-        app.logger.info(f'got {len(releases)} releases')
-        #TODO persist here
+        app.logger.info(f'Fetched {len(releases)} albums')
+        db_adds = 0
+        for release in releases:
+            #check if release is already in the database (avoid duplicates)
+            existing_release = Album.query.filter_by(spotify_id=release['id']).first()
+            if existing_release:
+                continue
+            artists = release['artists']
+            artist_ids = []
+            for artist in artists:
+                # check if artist is already in the database (avoid duplicates)
+                existing_artist = Artist.query.filter_by(spotify_id=artist['id']).first()
+                if not existing_artist:
+                    existing_artist = self.parse_artist(artist)
+                    db.session.add(existing_artist)
+                    db_adds += 1
+                artist_ids.append(existing_artist)
+            db.session.add(self.parse_release(release, artist_ids))
+            db_adds += 1
+        db.session.commit()
+        app.logger.info(f'Finished import ({db_adds} added)')
+                
+    def parse_release(self, release, artists):
+        release = Album(
+            spotify_id=release['id'],
+            name=release['name'],
+            uri=release['uri'],
+            href=release['href'],
+            album_type=release['album_type'],
+            images=release['images'],
+            external_urls=release['external_urls'],
+            available_markets=release['available_markets'],
+            artists=artists
+        )
+        return release
+
+    def parse_artist(self, artist):
+        artist = Artist(
+            spotify_id=artist['id'],
+            name=artist['name'],
+            uri=artist['uri'],
+            href=artist['href'],
+            external_urls=artist['external_urls']
+        )
+        return artist
