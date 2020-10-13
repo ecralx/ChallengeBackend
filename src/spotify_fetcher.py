@@ -9,10 +9,8 @@ class SpotifyFetcher(SpotifyAuth):
     SPOTIFY_LIMIT_NEW_RELEASES = 50
     SPOTIFY_EXPIRATION_MESSAGE = "The access token expired"
 
-    def __init__(self, access_token, expires_in, refresh_token, client_id, client_secret):
+    def __init__(self, access_token, expires_in, refresh_token):
         self.__set_init(access_token, expires_in, refresh_token)
-        self.__client_id = client_id
-        self.__client_secret = client_secret
 
     def __set_init(self, access_token, expires_in, refresh_token):
         self.__access_token = access_token
