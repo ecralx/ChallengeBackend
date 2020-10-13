@@ -39,6 +39,6 @@ def authCallback():
     expires_in = response.get('expires_in')
     refresh_token = response.get('refresh_token')
     spotifyFetcher = SpotifyFetcher(access_token, expires_in, refresh_token)
-    scheduler.add_job(func=spotifyFetcher.import_releases, id="fetch", replace_existing=True, trigger='interval', hours=12, next_run_time=datetime.now())
+    scheduler.add_job(func=spotifyFetcher.import_releases, id="fetch", replace_existing=True, trigger='interval', days=1, next_run_time=datetime.now())
     return redirect("http://localhost:5000")
 
