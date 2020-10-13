@@ -69,7 +69,7 @@ class SpotifyFetcher(SpotifyAuth):
 
     def import_releases(self):
         releases = self.fetch_all()
-        app.logger.info(f'Fetched {len(releases)} albums')
+        app.logger.info(f'Fetched {len(releases)} releases')
         db_adds = 0
         for release in releases:
             #check if release is already in the database (avoid duplicates)
@@ -89,7 +89,7 @@ class SpotifyFetcher(SpotifyAuth):
             db.session.add(self.parse_release(release, artist_ids))
             db_adds += 1
         db.session.commit()
-        app.logger.info(f'Finished import ({db_adds} added)')
+        app.logger.info(f'Finished import ({db_adds} insertions)')
                 
     def parse_release(self, release, artists):
         release = Album(
