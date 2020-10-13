@@ -40,8 +40,11 @@ And if you don't:
 $ python -m venv ./env
 $ source ./env/bin/activate
 $ pip install requirements.txt
+$ export $(grep -v '^#' .env | xargs)
 $ python manage.py create_db
 $ python manage.py run -h 0.0.0.0
+# When you're finished, unset the vars
+$ unset $(grep -v '^#' .env | sed -E 's/(.*)=.*/\1/' | xargs)
 ```
 
 Once you're done, visit [http://localhost:5000/api/artists](http://localhost:5000/api/artists) !
