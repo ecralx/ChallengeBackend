@@ -1,6 +1,7 @@
 from flask import jsonify, redirect, request
 from src import app
 from .spotify_auth import SpotifyAuth
+from .spotify_fetcher import SpotifyFetcher
 
 @app.route("/")
 def helloWorld():
@@ -21,7 +22,7 @@ def authCallback():
             'error': error
         }), 500
     code = request.args.get('code')
-
+    
     spotify = SpotifyAuth()
     response = spotify.getUserToken(code)
     if "error" in response:
@@ -30,6 +31,9 @@ def authCallback():
             'error': response
         }), 500
     
-    # Make the magic here :)
-    return jsonify(response)
+    access_token = response.get('access_token')
+    expires_in = response.get('expires_in')
+    refresh_token = response.get('refresh_token')
+    spotifyFetcher = SpotifyFetcher(access_token, expires_in, refresh_token)
+    return jsonify(spotifyFetcher.request())
 

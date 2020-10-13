@@ -48,7 +48,7 @@ class SpotifyAuth(object):
 
     def refreshAuth(self, refresh_token):
         body = {"grant_type": "refresh_token", "refresh_token": refresh_token}
-
+        #TODO: fix this
         post_refresh = requests.post(
             self.SPOTIFY_URL_TOKEN, data=body, headers=self.HEADER
         )
