@@ -1,7 +1,8 @@
-from .spotify_auth import SpotifyAuth
+import requests, json
 from datetime import datetime
 from math import ceil
-import requests, json
+from src import app
+from .spotify_auth import SpotifyAuth
 
 class SpotifyFetcher(SpotifyAuth):
     SPOTIFY_URL_NEW_RELEASES = "https://api.spotify.com/v1/browse/new-releases"
@@ -56,3 +57,8 @@ class SpotifyFetcher(SpotifyAuth):
                 releases += batch.get('albums').get('items')
 
         return releases
+
+    def import_releases(self):
+        releases = self.fetch_all()
+        app.logger.info(f'got {len(releases)} releases')
+        #TODO persist here

@@ -1,11 +1,15 @@
 from flask import jsonify, redirect, request
-from src import app
+from datetime import datetime
+from src import app, scheduler
 from .spotify_auth import SpotifyAuth
 from .spotify_fetcher import SpotifyFetcher
 
 @app.route("/")
 def helloWorld():
-    return jsonify(hello="world")
+    if not scheduler.get_job('fetch'):
+        return redirect("http://localhost:5000/auth/authorize")
+    releases = []
+    return jsonify(releases)
 
 @app.route("/auth/authorize")
 def authLogin():
@@ -35,5 +39,6 @@ def authCallback():
     expires_in = response.get('expires_in')
     refresh_token = response.get('refresh_token')
     spotifyFetcher = SpotifyFetcher(access_token, expires_in, refresh_token)
-    return jsonify(spotifyFetcher.request())
+    scheduler.add_job(func=spotifyFetcher.import_releases, id="fetch", replace_existing=True, trigger='interval', hours=12, next_run_time=datetime.now())
+    return redirect("http://localhost:5000")
 
